@@ -1,12 +1,33 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue';
 import { io } from 'socket.io-client';
+import { ref, reactive } from 'vue';
 
-const socket = io('http://localhost:3000'); // WebSocket 연결
+export const state = reactive({
+  connected: false,
+  fooEvents: [],
+  barEvents: [],
+});
 
-// 서버에서 'nameUpdated' 이벤트 수신
-socket.on('nameUpdated', (newName) => {
-  this.name = newName; // 화면에 새로운 이름 반영
+// "undefined" means the URL will be computed from the `window.location` object
+const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000';
+
+export const socket = io(URL);
+
+socket.on('connect', () => {
+  state.connected = true;
+});
+
+socket.on('disconnect', () => {
+  state.connected = false;
+});
+
+socket.on('foo', (...args) => {
+  state.fooEvents.push(args);
+});
+
+socket.on('bar', (...args) => {
+  state.barEvents.push(args);
 });
 </script>
 

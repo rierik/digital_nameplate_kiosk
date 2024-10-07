@@ -1,36 +1,18 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue';
 import { io } from 'socket.io-client';
 import { ref, reactive } from 'vue';
 
-export const state = reactive({
-  connected: false,
-  fooEvents: [],
-  barEvents: [],
-});
+const name = ref('');
 
-// "undefined" means the URL will be computed from the `window.location` object
 const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000';
 
-export const socket = io(URL);
+const socket = io(URL);
 
-socket.on('connect', () => {
-  state.connected = true;
-});
-
-socket.on('disconnect', () => {
-  state.connected = false;
-});
-
-socket.on('foo', (...args) => {
-  state.fooEvents.push(args);
-});
-
-socket.on('bar', (...args) => {
-  state.barEvents.push(args);
+socket.on('nameUpdated', (newName) => {
+  name.value = newName;
 });
 </script>
 
-<template></template>
+<template>{{ name }}</template>
 
 <style scoped></style>
